@@ -1,0 +1,14 @@
+
+
+Her er en visuell oversikt over en måte å dele opp problemet i moduler
+https://creately.com/diagram/example/in8mtagh1/TTK4145%20Elevator
+
+her er kjapp forklaring av et mulig design
+https://github.com/mortenfyhn/TTK4145-Heis
+
+Vi må levere inn endel diagrammer og liknende, så vi burde se på endel ting:
+- Vi trenger et moduldiagram, relativt utfyllende (dvs. inkludert funksjonsnavn, kommunikasjon mellom moduler o.l.)
+- Gode løsninger for å sikre et failsafe system
+- Usikker på om det er det de spesifikt er ute etter, men naturlig om vi klarer å følge en løs UML-standard (se forrige forelesning i Tilpdat)
+- Oversikt over synkronisering og kontoll på data som sendes mellom heiser
+- Som sagt på lab, vi må huske at det skal være mulig å implementere systemet v.h.a. designet uten store problemer -> det må være utfyllende

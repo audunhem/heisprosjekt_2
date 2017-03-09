@@ -1,0 +1,111 @@
+Possible fault modes:
+
+
+//Things to think about
+1= How will we manage the reboot? All elevators will broadcast their orders and their state say every second! But in the case
+of a reboot -lets say #2 freezes and needs to reboot. Once online again he needs to update both his externalOrders and his
+INternal orders. THe information is stored  with #1 and #3 should he then broadcast a "requesting masterOrderlist" message?
+ANd then the other two will issue a masterOrderlist on the next broadcast?
+
+I dont know. Maybe its easier if all elevators broadcast the masterOrderList every second. So the entire set of
+information is being stored three places and being broadcasted by every elevator every second. When #3 receives a broadcast
+from #2 he will overwrite the part of his masterList concerning #2. Each time -even though probably 99/100 broadcasts will
+not contain an update
+
+So each elevator has a unique number like #1 #2 and #3
+
+
+
+1. One elevator loses connection with the other two
+  - Lets assume that #2 loses connection.
+  * What will #1 and #3 do?
+    The other two will stop receiving the broadcasts. After a predetermined number of missed broadcasts, ex 3 (3s)
+    the elevator with the lowest number (#1) will reassign the external orders to the remaining elevators. #1 Will broadcast 
+    the updated externalQueue list and #2 will overwrite its version of it. So that 
+    
+  * What will #2 do?
+    #2 will either receive som error or stop receiveing broadcasts from all other elevators. It can then assume to be
+   disconnected. It will reboot and try to reconnect. Should it be able to reconnect it will update its externalQueue list from what #1
+   and #2 are broadcasting. And will have lost all its external orders. Its internal orders will remain.
+   
+   
+   // Need to figure out how to handle a reconnection again. Where are the external orders stored
+   //Its possible that its better to give #2 a little time to try and reboot before reassigning its external orders
+   //But how do we handle this without a master/slave type of deal?
+
+
+2. The motor/floor sensor of a elevator stops functioning
+  - Lets assume that elevator #2 loses motorfunction
+    * So #2 tries to go to the 4th floor but it never reaches it. Its connected to the others but the sensor for floor 4 never enables.
+      The elevators need to check that they are in fact moving in the way they think they are. If the time to reach the assigned floor
+      exceeds what is reasonable the elevator goes to debug mode. It will be unable to receive new orders and will try to reboot
+      After one reboot and the problem still remains it will start sending isAlive=False. Elevator #1 will reassign its external Orders.
+      
+   *If the sensors of #2 stops working we will have a similar type of problem. We will check it the same way and react in the same way
+   
+   
+   //Okay, again its the issue of reassigning the orders without any chance of mistake. Every elevator is broadcasting its
+   state and data every second. Any changes in the state will envoke a over-write of the masterList stored at every unit.
+   #1 needs to reassign the external orders before removing the external orders from #2. Then it will broadcast a new list with
+   isChanged = True. It will then overwrite all other copies
+
+3. Power shortage
+
+
+4. Cosmic rays
+
+5. What if two units have a different version of the masterOrderList
+
+
+
+
+Modules:
+
+
+
+type ExternalOrder struct {
+  floor int
+  direction int
+}
+
+
+type ElevatorState struct {
+  
+  isDebugging bool
+  nextFloor int
+  direction int
+  
+}
+  
+
+
+type ElevatorData struct {
+  isAlive bool
+  InternalQueue list
+  ExternalQueue list
+  state ElevatorState
+}
+
+1. Network
+  func init()
+  func broadcast(masterList array)
+  
+
+2. Elevator //THis module also contains the driver
+  func assignExternalOrder(Order order)
+  func assignInternalOrder(int floor)
+  
+  
+  updateAllOrders
+  masterList array
+  //This is an array containing the ElevatorData structs from all the units in the system
+  //Everytime a unit receives a broadcast packet from another elevator he will update that elevators
+  //ElevatorData struct in his versio of masterList
+  //This will make sure that no orders are lost even though there is some 
+
+
+
+
+3. Assigner
+
+4. Backup
